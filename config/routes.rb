@@ -4,6 +4,7 @@ Rails.application.routes.draw do
       namespace :customers do
         get '/', to: 'customers#index'
         get '/find', to: 'find_customers#show'
+        get '/find_all', to: 'find_customers#index'
         get '/:id', to: 'customers#show'
       end
     end
