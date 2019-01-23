@@ -33,11 +33,13 @@ describe "Customers API" do
 
     expect(customers_data.length).to eq(1)
     expect(customers_data["data"].length).to eq(3)
+    expect(customers_data["data"][0]["attributes"].length).to eq(3)
 
     expect(customers_data["data"][0]["id"]).to eq(Customer.first.id.to_s)
     expect(customers_data["data"][0]["type"]).to eq("customer")
     expect(customers_data["data"][0]["attributes"]["first_name"]).to eq(Customer.first.first_name)
     expect(customers_data["data"][0]["attributes"]["last_name"]).to eq(Customer.first.last_name)
+    expect(customers_data["data"][0]["attributes"]["id"]).to eq(Customer.first.id)
 
     expect(customers_data["data"][1]["id"]).to eq(Customer.second.id.to_s)
     expect(customers_data["data"][1].length).to eq(3)
@@ -61,5 +63,96 @@ describe "Customers API" do
     expect(customers_data["data"]["type"]).to eq("customer")
     expect(customers_data["data"]["attributes"]["first_name"]).to eq(customer.first_name)
     expect(customers_data["data"]["attributes"]["last_name"]).to eq(customer.last_name)
+    expect(customers_data["data"]["attributes"]["id"]).to eq(customer.id)
+  end
+  describe 'can find customer by customer parameters' do
+    before(:each) do
+      @cust_1 = create(:customer, created_at: '2012-03-27 14:54:09 UTC', updated_at: '2012-03-27 14:54:09 UTC')
+      @cust_2 = create(:customer, created_at: '2012-04-27 14:54:09 UTC', updated_at: '2012-04-27 14:54:09 UTC')
+      @cust_3 = create(:customer, created_at: '2012-05-27 14:54:09 UTC', updated_at: '2012-05-27 14:54:09 UTC')
+      @cust_4 = create(:customer, created_at: '2012-06-27 14:54:09 UTC', updated_at: '2012-06-27 14:54:09 UTC')
+      @cust_5 = create(:customer, created_at: '2012-07-27 14:54:09 UTC', updated_at: '2012-07-27 14:54:09 UTC')
+    end
+    it 'can find by id' do
+      get "/api/v1/customers/find?id=#{@cust_2.id}"
+
+      expect(response).to be_successful
+
+      customer_data = JSON.parse(response.body)
+
+      expect(customer_data.length).to eq(1)
+      expect(customer_data["data"].length).to eq(3)
+
+      expect(customer_data["data"]["id"]).to eq(@cust_2.id.to_s)
+      expect(customer_data["data"]["type"]).to eq("customer")
+      expect(customer_data["data"]["attributes"]["first_name"]).to eq(@cust_2.first_name)
+      expect(customer_data["data"]["attributes"]["last_name"]).to eq(@cust_2.last_name)
+      expect(customer_data["data"]["attributes"]["id"]).to eq(@cust_2.id)
+    end
+    it 'can find by first name' do
+      get "/api/v1/customers/find?first_name=#{@cust_2.first_name}"
+
+      expect(response).to be_successful
+
+      customer_data = JSON.parse(response.body)
+
+      expect(customer_data.length).to eq(1)
+      expect(customer_data["data"].length).to eq(3)
+
+      expect(customer_data["data"]["id"]).to eq(@cust_2.id.to_s)
+      expect(customer_data["data"]["type"]).to eq("customer")
+      expect(customer_data["data"]["attributes"]["first_name"]).to eq(@cust_2.first_name)
+      expect(customer_data["data"]["attributes"]["last_name"]).to eq(@cust_2.last_name)
+      expect(customer_data["data"]["attributes"]["id"]).to eq(@cust_2.id)
+    end
+    it 'can find by last name' do
+      get "/api/v1/customers/find?last_name=#{@cust_2.last_name}"
+
+      expect(response).to be_successful
+
+      customer_data = JSON.parse(response.body)
+
+      expect(customer_data.length).to eq(1)
+      expect(customer_data["data"].length).to eq(3)
+
+      expect(customer_data["data"]["id"]).to eq(@cust_2.id.to_s)
+      expect(customer_data["data"]["type"]).to eq("customer")
+      expect(customer_data["data"]["attributes"]["first_name"]).to eq(@cust_2.first_name)
+      expect(customer_data["data"]["attributes"]["last_name"]).to eq(@cust_2.last_name)
+      expect(customer_data["data"]["attributes"]["id"]).to eq(@cust_2.id)
+    end
+    it 'can find by created at date' do
+      get "/api/v1/customers/find?created_at=#{@cust_2.created_at}"
+
+      expect(response).to be_successful
+
+      customer_data = JSON.parse(response.body)
+
+      expect(customer_data.length).to eq(1)
+      expect(customer_data["data"].length).to eq(3)
+
+      expect(customer_data["data"]["id"]).to eq(@cust_2.id.to_s)
+      expect(customer_data["data"]["type"]).to eq("customer")
+      expect(customer_data["data"]["attributes"]["first_name"]).to eq(@cust_2.first_name)
+      expect(customer_data["data"]["attributes"]["last_name"]).to eq(@cust_2.last_name)
+      expect(customer_data["data"]["attributes"]["id"]).to eq(@cust_2.id)
+    end
+    it 'can find by updated at date' do
+      get "/api/v1/customers/find?updated_at=#{@cust_2.updated_at}"
+
+      expect(response).to be_successful
+
+      customer_data = JSON.parse(response.body)
+
+      expect(customer_data.length).to eq(1)
+      expect(customer_data["data"].length).to eq(3)
+
+      expect(customer_data["data"]["id"]).to eq(@cust_2.id.to_s)
+      expect(customer_data["data"]["type"]).to eq("customer")
+      expect(customer_data["data"]["attributes"]["first_name"]).to eq(@cust_2.first_name)
+      expect(customer_data["data"]["attributes"]["last_name"]).to eq(@cust_2.last_name)
+      expect(customer_data["data"]["attributes"]["id"]).to eq(@cust_2.id)
+    end
+
   end
 end

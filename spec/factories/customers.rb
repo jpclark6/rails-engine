@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :customer do
-    first_name { "Scrooge" }
+    sequence(:first_name) { |n| "Scrooge-#{n}" } 
     sequence(:last_name) { |n| "McDuck-#{n}" }
   end
 end
