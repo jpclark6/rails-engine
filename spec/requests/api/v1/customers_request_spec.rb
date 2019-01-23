@@ -9,6 +9,7 @@ describe "Customers API" do
     expect(response).to be_successful
 
     customers_data = JSON.parse(response.body)
+
     expect(customers_data["data"].length).to eq(3)
 
     expect(customers_data["data"][0]["attributes"]["first_name"]).to eq(Customer.all.first.first_name)
@@ -19,7 +20,7 @@ describe "Customers API" do
     expect(customers_data["data"][1]["attributes"]["last_name"]).to eq(Customer.all.second.last_name)
     expect(customers_data["data"][2]["attributes"]["last_name"]).to eq(Customer.all.third.last_name)
   end
-  it "sends data on one customer" do
+  it "sends list data in correct format" do
     create_list(:customer, 3)
 
     get '/api/v1/customers.json'
@@ -40,6 +41,23 @@ describe "Customers API" do
     expect(customers_data["data"][1].length).to eq(3)
     expect(customers_data["data"][2]["id"]).to eq(Customer.third.id.to_s)
     expect(customers_data["data"][2].length).to eq(3)
+  end
+  it 'sends formatted data on one customer' do
+    create_list(:customer, 3)
+    customer = Customer.second
 
+    get "/api/v1/customers/#{customer.id}.json"
+
+    expect(response).to be_successful
+
+    customers_data = JSON.parse(response.body)
+
+    expect(customers_data.length).to eq(1)
+    expect(customers_data["data"].length).to eq(1)
+
+    expect(customers_data["data"][0]["id"]).to eq(customer.id.to_s)
+    expect(customers_data["data"][0]["type"]).to eq("customer")
+    expect(customers_data["data"][0]["attributes"]["first_name"]).to eq(customer.first_name)
+    expect(customers_data["data"][0]["attributes"]["last_name"]).to eq(customer.last_name)
   end
 end
