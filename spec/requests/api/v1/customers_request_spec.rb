@@ -53,11 +53,11 @@ describe "Customers API" do
     customers_data = JSON.parse(response.body)
 
     expect(customers_data.length).to eq(1)
-    expect(customers_data["data"].length).to eq(1)
+    expect(customers_data["data"].length).to eq(3)
 
-    expect(customers_data["data"][0]["id"]).to eq(customer.id.to_s)
-    expect(customers_data["data"][0]["type"]).to eq("customer")
-    expect(customers_data["data"][0]["attributes"]["first_name"]).to eq(customer.first_name)
-    expect(customers_data["data"][0]["attributes"]["last_name"]).to eq(customer.last_name)
+    expect(customers_data["data"]["id"]).to eq(customer.id.to_s)
+    expect(customers_data["data"]["type"]).to eq("customer")
+    expect(customers_data["data"]["attributes"]["first_name"]).to eq(customer.first_name)
+    expect(customers_data["data"]["attributes"]["last_name"]).to eq(customer.last_name)
   end
 end
