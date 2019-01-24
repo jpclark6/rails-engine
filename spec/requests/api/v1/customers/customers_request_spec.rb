@@ -172,7 +172,7 @@ describe "Customers API" do
       @cust_5 = create(:customer, first_name: 'Three', last_name: 'One', created_at: '2012-03-27 14:54:09 UTC', updated_at: '2012-07-27 14:54:09 UTC')
     end
 
-    it 'can find by id' do
+    it 'can find all by id' do
       get "/api/v1/customers/find_all?id=#{@cust_2.id}"
 
       expect(response).to be_successful
@@ -189,7 +189,7 @@ describe "Customers API" do
       expect(customer_data["data"][0]["attributes"]["id"]).to eq(@cust_2.id)
     end
 
-    it 'can find by first name' do
+    it 'can find all by first name' do
       get "/api/v1/customers/find_all?first_name=#{@cust_2.first_name}"
 
       expect(response).to be_successful
@@ -212,7 +212,7 @@ describe "Customers API" do
       expect(customer_data["data"][1]["attributes"]["id"]).to eq(@cust_2.id)
     end
 
-    it 'can find by last name' do
+    it 'can find all by last name' do
       get "/api/v1/customers/find_all?last_name=#{@cust_4.last_name}"
 
       expect(response).to be_successful
@@ -235,7 +235,7 @@ describe "Customers API" do
       expect(customer_data["data"][1]["attributes"]["id"]).to eq(@cust_5.id)
     end
 
-    it 'can find by created at date' do
+    it 'can find all by created at date' do
       get "/api/v1/customers/find_all?created_at=#{@cust_1.created_at}"
 
       expect(response).to be_successful
@@ -260,7 +260,7 @@ describe "Customers API" do
       expect(customer_data["data"][2]["id"]).to eq(@cust_5.id.to_s)
     end
 
-    it 'can find by updated at date' do
+    it 'can find all by updated at date' do
       get "/api/v1/customers/find_all?updated_at=#{@cust_2.updated_at}"
 
       expect(response).to be_successful
@@ -283,5 +283,21 @@ describe "Customers API" do
       expect(customer_data["data"][1]["attributes"]["id"]).to eq(@cust_4.id)
     end
 
+  end
+
+  it 'can return a random customer' do
+    create_list(:customer, 5)
+
+    get "/api/v1/customers/random.json"
+
+    expect(response).to be_successful
+
+    customers_data = JSON.parse(response.body)
+
+    expect(customers_data.length).to eq(1)
+    expect(customers_data["data"].length).to eq(3)
+    expect(customers_data["data"].keys). to eq(["id", "type", "attributes"])
+    expect(customers_data["data"]["type"]). to eq("customer")
+    expect(customers_data["data"]["attributes"].keys). to eq(["id", "first_name", "last_name"])
   end
 end

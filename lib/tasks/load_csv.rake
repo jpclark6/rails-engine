@@ -20,6 +20,6 @@ task :load_csv do
     InvoiceItem.create!(item: Item.find(row[:item_id]), invoice: Invoice.find(row[:invoice_id]), quantity: row[:quantity], unit_price: row[:unit_price], updated_at: row[:updated_at], created_at: row[:created_at])
   end
   CSV.foreach('./data/transactions.csv', :headers => true, :header_converters => :symbol) do |row|
-    Transaction.create!(invoice: Invoice.find(row[:invoice_id]), credit_card_number: row[:credit_card_number], credit_card_expiration_date: row[:credit_card_expiration_date], result: row[:result], updated_at: row[:updated_at], created_at: row[:created_at])
+    Transaction.create!(invoice: Invoice.find(row[:invoice_id]), credit_card_number: row[:credit_card_number], credit_card_expiration_date: row[:credit_card_expiration_date], result: row[:result].to_s, updated_at: row[:updated_at], created_at: row[:created_at])
   end
 end
