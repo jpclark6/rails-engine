@@ -1,4 +1,5 @@
 require 'rails_helper'
+include ActionView::Helpers::NumberHelper
 
 describe 'requesting a merchant' do
   describe 'all merchants' do
@@ -8,7 +9,7 @@ describe 'requesting a merchant' do
       @merchant_3 = create(:merchant)
       @merchant_4 = create(:merchant)
 
-      @item_1 = create(:item, merchant: @merchant_1, unit_price: 500)
+      @item_1 = create(:item, merchant: @merchant_1, unit_price: 250)
       @item_2 = create(:item, merchant: @merchant_1, unit_price: 1000)
       @item_3 = create(:item, merchant: @merchant_2, unit_price: 3000)
       @item_4 = create(:item, merchant: @merchant_3, unit_price: 4000)
@@ -33,20 +34,24 @@ describe 'requesting a merchant' do
       @transaction_3 = create(:transaction, invoice: @invoice_3, result: :success, updated_at: '2012-03-22 14:54:09 UTC')
       @transaction_4 = create(:transaction, invoice: @invoice_4, result: :success, updated_at: '2012-03-23 14:54:09 UTC')
       @transaction_5 = create(:transaction, invoice: @invoice_5, result: :failed, updated_at: '2012-03-24 14:54:09 UTC')
-  
     end
+    
     it 'returns a selected quantity of top merchants by revenue' do
       get "/api/v1/merchants/most_revenue?quantity=2"
       
       expect(response).to be_successful
       merchants_data = JSON.parse(response.body)
+
+      ex_rev_1 = number_to_currency(Merchant.top_revenue(2)[0].total_revenue / 100.0)[1..-1]
+      ex_rev_2 = number_to_currency(Merchant.top_revenue(2)[1].total_revenue / 100.0)[1..-1]
+
       expect(merchants_data["data"].length).to eq(2)
       expect(merchants_data["data"][0]["attributes"]["name"]).to eq(@merchant_3.name)
-      expect(merchants_data["data"][0]["attributes"]["total_revenue"]).to eq(@merchant_3.total_revenue)
-      expect(merchants_data["data"][0]["type"]).to eq("merchant")
+      expect(merchants_data["data"][0]["attributes"]["total_revenue"]).to eq(ex_rev_1)
+      expect(merchants_data["data"][0]["type"]).to eq("merchants_revenue")
       expect(merchants_data["data"][1]["attributes"]["name"]).to eq(@merchant_2.name)
-      expect(merchants_data["data"][1]["attributes"]["total_revenue"]).to eq(@merchant_2.total_revenue)
-      expect(merchants_data["data"][1]["type"]).to eq("merchant")
+      expect(merchants_data["data"][1]["attributes"]["total_revenue"]).to eq(ex_rev_2)
+      expect(merchants_data["data"][1]["type"]).to eq("merchants_revenue")
       # @merchant_3, @merchant_2
     end
     xit 'can find merchants with the most items sold with qty to return' do

@@ -8,6 +8,9 @@ Rails.application.routes.draw do
         get '/random', to: 'random#show'
         get '/:id', to: 'customers#show'
       end
+      namespace :merchants do
+        get '/most_revenue', to: 'merchants_revenue#index'
+      end
     end
   end
 end
