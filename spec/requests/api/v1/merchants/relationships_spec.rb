@@ -44,10 +44,42 @@ describe 'as a merchant' do
     expect(response).to be_successful
     results = JSON.parse(response.body)
 
-    
+    expect(results["data"].count).to eq(2)
+    expect(results["data"][0]["attributes"]["id"]).to eq(@item_1.id)
+    expect(results["data"][1]["attributes"]["id"]).to eq(@item_2.id)
+    expect(results["data"][0]["attributes"]["merchant_id"]).to eq(@merchant_1.id)
+    expect(results["data"][1]["attributes"]["merchant_id"]).to eq(@merchant_1.id)
+
+    get "/api/v1/merchants/#{@merchant_3.id}/items"
+
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
+
+    expect(results["data"].count).to eq(2)
+    expect(results["data"][0]["attributes"]["id"]).to eq(@item_5.id)
+    expect(results["data"][1]["attributes"]["id"]).to eq(@item_6.id)
+    expect(results["data"][0]["attributes"]["merchant_id"]).to eq(@merchant_3.id)
+    expect(results["data"][1]["attributes"]["merchant_id"]).to eq(@merchant_3.id)
   end
+  it 'returns a collection of invoices associated with a merchant' do
+    get "/api/v1/merchants/#{@merchant_1.id}/invoices"
 
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
 
-  # GET /api/v1/merchants/:id/items returns a collection of items associated with that merchant
-  # GET /api/v1/merchants/:id/invoices returns a collection of invoices associated with that merchant from their known orders
+    expect(results["data"].count).to eq(1)
+    expect(results["data"][0]["attributes"]["id"]).to eq(@invoice_1.id)
+    expect(results["data"][0]["attributes"]["merchant_id"]).to eq(@merchant_1.id)
+
+    get "/api/v1/merchants/#{@merchant_3.id}/invoices"
+
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
+
+    expect(results["data"].count).to eq(2)
+    expect(results["data"][0]["attributes"]["id"]).to eq(@invoice_4.id)
+    expect(results["data"][1]["attributes"]["id"]).to eq(@invoice_5.id)
+    expect(results["data"][0]["attributes"]["merchant_id"]).to eq(@merchant_3.id)
+    expect(results["data"][1]["attributes"]["merchant_id"]).to eq(@merchant_3.id)
+  end
 end

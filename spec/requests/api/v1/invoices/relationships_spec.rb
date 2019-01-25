@@ -38,6 +38,9 @@ describe 'as a customer' do
     @transaction_4 = create(:transaction, invoice: @invoice_4, result: :success, updated_at: '2012-03-24 14:54:09 UTC')
     @transaction_5 = create(:transaction, invoice: @invoice_5, result: :failed, updated_at: '2012-03-24 14:54:09 UTC')
   end
+  it 'can return a list of transactions associated with an invoice' do
+    
+  end
 
   # GET /api/v1/invoices/:id/transactions returns a collection of associated transactions
   # GET /api/v1/invoices/:id/invoice_items returns a collection of associated invoice items
