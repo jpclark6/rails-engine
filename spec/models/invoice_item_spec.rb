@@ -24,8 +24,8 @@ RSpec.describe InvoiceItem, type: :model do
 
       @invoice_1 = create(:invoice, merchant: @merchant_1, status: "shipped", updated_at: '2012-03-20 14:54:09 UTC')
       @invoice_2 = create(:invoice, merchant: @merchant_1, status: "shipped", updated_at: '2012-03-21 14:54:09 UTC')
-      @invoice_3 = create(:invoice, merchant: @merchant_2, status: "shipped", updated_at: '2012-03-22 14:54:09 UTC')
-      @invoice_4 = create(:invoice, merchant: @merchant_3, status: "shipped", updated_at: '2012-03-23 14:54:09 UTC')
+      @invoice_3 = create(:invoice, merchant: @merchant_2, status: "shipped", updated_at: '2012-03-24 14:54:09 UTC')
+      @invoice_4 = create(:invoice, merchant: @merchant_3, status: "shipped", updated_at: '2012-03-24 14:54:09 UTC')
       @invoice_5 = create(:invoice, merchant: @merchant_4, status: "shipped", updated_at: '2012-03-24 14:54:09 UTC')
 
       @invoice_items_1 = create(:invoice_item, item: @item_1, invoice: @invoice_1, quantity: 10, unit_price: @item_1.unit_price)
@@ -44,11 +44,11 @@ RSpec.describe InvoiceItem, type: :model do
     end
     it '.by_date' do
       date = '2012-03-24'
-      expect(InvoiceItem.by_date(date)[:total_revenue]).to eq(74000)
+      expect(InvoiceItem.by_date(date)).to eq(74000)
       date = '2012-03-20'
-      expect(InvoiceItem.by_date(date)[:total_revenue]).to eq(12500)
+      expect(InvoiceItem.by_date(date)).to eq(12500)
       date = '2015-03-29'
-      expect(InvoiceItem.by_date(date)[:total_revenue]).to eq(0)
+      expect(InvoiceItem.by_date(date)).to eq(0)
     end
   end
 end

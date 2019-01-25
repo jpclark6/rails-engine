@@ -6,15 +6,9 @@ class InvoiceItem < ApplicationRecord
   belongs_to :invoice
 
   def self.by_date(date)
-    revenue = select("sum(invoice_items.unit_price * invoice_items.quantity) as total_revenue")
-        .joins(invoice: :transactions)
-        .where("transactions.updated_at >= '#{date}' AND transactions.updated_at < '#{date}'::date + '1 day'::interval")
-        .where(transactions: {result: 0})
-        .group("transactions.updated_at")[0]
-    if revenue
-      return revenue
-    else
-      return {total_revenue: 0}
-    end
+    InvoiceItem.joins(invoice: :transactions)
+                        .where("invoices.updated_at >= '#{date}' AND invoices.updated_at < '#{date}'::date + '1 day'::interval")
+                        .where(transactions: {result: 0})
+                        .sum("invoice_items.unit_price * invoice_items.quantity")
   end
 end
