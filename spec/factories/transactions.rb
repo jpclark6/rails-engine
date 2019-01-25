@@ -1,8 +1,8 @@
 FactoryBot.define do
   factory :transaction do
-    invoice { nil }
-    credit_card_number { 1 }
+    invoice 
+    credit_card_number { "489248932894" }
     credit_card_expiration_date { "2019-01-23" }
-    result { "MyString" }
+    result { 0 }
   end
 end

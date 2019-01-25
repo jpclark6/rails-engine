@@ -11,22 +11,37 @@ Rails.application.routes.draw do
         get '/:id/transactions', to: 'customer_transactions#index'
       end
       namespace :merchants do
+        get '/', to: 'merchants#index'
         get '/most_revenue', to: 'merchants_revenue#index'
         get '/most_items', to: 'merchants_items#index'
         get '/revenue', to: 'merchants_revenue_by_date#show'
+        get '/:id', to: 'merchants#show'
         get '/:id/revenue', to: 'merchants_revenue#show'
         get '/:id/favorite_customer', to: 'merchant_favorite_customer#show'
         get '/:id/items', to: 'merchants_items_list#index'
         get '/:id/invoices', to: 'merchants_invoices_list#index'
       end
       namespace :invoices do
+        get '/', to: 'invoices#index'
+        get '/:id', to: 'invoices#show'
         get '/:id/transactions', to: 'transactions#index'
         get '/:id/invoice_items', to: 'invoice_items#index'
         get '/:id/items', to: 'items#index'
         get '/:id/customer', to: 'customer#show'
         get '/:id/merchant', to: 'merchant#show'
       end
+      namespace :invoice_items do
+        get '/', to: 'invoice_items#index'
+        get '/find', to: 'find_invoice_items#show'
+        get '/:id', to: 'invoice_items#show'
+      end
+      namespace :items do
+        get '/', to: 'items#index'
+        get '/:id', to: 'items#show'
+      end
       namespace :transactions do
+        get '/', to: 'transactions#index'
+        get '/:id', to: 'transactions#show'
         get '/:id/invoice', to: 'invoice#show'
       end
     end
