@@ -26,7 +26,7 @@ class Merchant < ApplicationRecord
   def total_revenue(params)
     if params.keys.include?("date")
       date = params[:date]
-      x = invoices.joins(:invoice_items)
+      invoices.joins(:invoice_items)
           .joins(:transactions)
           .where(transactions: {result: 0})
           .where("invoices.updated_at >= '#{date}' AND invoices.updated_at < '#{date}'::date + '1 day'::interval")
@@ -37,6 +37,15 @@ class Merchant < ApplicationRecord
           .where(transactions: {result: 0})
           .sum('invoice_items.quantity * invoice_items.unit_price')
     end
+  end
+
+  def favorite_customer
+    customer = invoices.select('customer_id, count(transactions.id) as trans_count')
+            .joins(:transactions)
+            .where(transactions: {result: 0})
+            .group(:customer_id)
+            .order('trans_count desc')[0]
+    Customer.find(customer.customer_id)
   end
 
 end
