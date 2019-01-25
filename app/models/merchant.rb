@@ -23,4 +23,20 @@ class Merchant < ApplicationRecord
             .limit(quantity)
   end
 
+  def total_revenue(params)
+    if params.keys.include?("date")
+      date = params[:date]
+      x = invoices.joins(:invoice_items)
+          .joins(:transactions)
+          .where(transactions: {result: 0})
+          .where("invoices.updated_at >= '#{date}' AND invoices.updated_at < '#{date}'::date + '1 day'::interval")
+          .sum('invoice_items.quantity * invoice_items.unit_price')
+    else
+      invoices.joins(:invoice_items)
+          .joins(:transactions)
+          .where(transactions: {result: 0})
+          .sum('invoice_items.quantity * invoice_items.unit_price')
+    end
+  end
+
 end
