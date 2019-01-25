@@ -46,6 +46,7 @@ describe 'as a merchant' do
 
     expect(results["data"].count).to eq(2)
     expect(results["data"][0]["attributes"]["id"]).to eq(@item_1.id)
+    expect(results["data"][0]["type"]).to eq("item")
     expect(results["data"][1]["attributes"]["id"]).to eq(@item_2.id)
     expect(results["data"][0]["attributes"]["merchant_id"]).to eq(@merchant_1.id)
     expect(results["data"][1]["attributes"]["merchant_id"]).to eq(@merchant_1.id)

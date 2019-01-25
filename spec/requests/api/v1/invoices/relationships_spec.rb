@@ -37,15 +37,102 @@ describe 'as a customer' do
     @transaction_3 = create(:transaction, invoice: @invoice_3, result: :success, updated_at: '2012-03-24 14:54:09 UTC')
     @transaction_4 = create(:transaction, invoice: @invoice_4, result: :success, updated_at: '2012-03-24 14:54:09 UTC')
     @transaction_5 = create(:transaction, invoice: @invoice_5, result: :failed, updated_at: '2012-03-24 14:54:09 UTC')
+    @transaction_6 = create(:transaction, invoice: @invoice_1, result: :failed, updated_at: '2012-03-24 14:54:09 UTC')
   end
   it 'can return a list of transactions associated with an invoice' do
-    
+    get "/api/v1/invoices/#{@invoice_1.id}/transactions"
+
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
+
+    expect(results["data"].count).to eq(2)
+    expect(results["data"][0]["attributes"]["invoice_id"]).to eq(@invoice_1.id)
+    expect(results["data"][0]["type"]).to eq("transaction")
+    expect(results["data"][1]["attributes"]["invoice_id"]).to eq(@invoice_1.id)
+
+    get "/api/v1/invoices/#{@invoice_2.id}/transactions"
+
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
+
+    expect(results["data"].count).to eq(1)
+    expect(results["data"][0]["attributes"]["invoice_id"]).to eq(@invoice_2.id)
+    expect(results["data"][0]["type"]).to eq("transaction")
   end
+  it 'can return a list of invoice items associated with an invoice' do
+    get "/api/v1/invoices/#{@invoice_1.id}/invoice_items"
 
-  # GET /api/v1/invoices/:id/transactions returns a collection of associated transactions
-  # GET /api/v1/invoices/:id/invoice_items returns a collection of associated invoice items
-  # GET /api/v1/invoices/:id/items returns a collection of associated items
-  # GET /api/v1/invoices/:id/customer returns the associated customer
-  # GET /api/v1/invoices/:id/merchant returns the associated merchant
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
 
+    expect(results["data"].count).to eq(2)
+    expect(results["data"][0]["attributes"]["invoice_id"]).to eq(@invoice_1.id)
+    expect(results["data"][0]["type"]).to eq("invoice_item")
+    expect(results["data"][1]["attributes"]["invoice_id"]).to eq(@invoice_1.id)
+
+    get "/api/v1/invoices/#{@invoice_5.id}/invoice_items"
+
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
+
+    expect(results["data"].count).to eq(1)
+    expect(results["data"][0]["attributes"]["invoice_id"]).to eq(@invoice_5.id)
+    expect(results["data"][0]["type"]).to eq("invoice_item")
+  end
+  it 'can return a list of items associated with an invoice' do
+    get "/api/v1/invoices/#{@invoice_1.id}/items"
+
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
+
+    expect(results["data"].count).to eq(2)
+    expect(results["data"][0]["attributes"]["merchant_id"]).to eq(@merchant_1.id)
+    expect(results["data"][0]["type"]).to eq("item")
+    expect(results["data"][1]["attributes"]["merchant_id"]).to eq(@merchant_1.id)
+
+    get "/api/v1/invoices/#{@invoice_5.id}/items"
+
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
+
+    expect(results["data"].count).to eq(1)
+    expect(results["data"][0]["attributes"]["merchant_id"]).to eq(@merchant_3.id)
+    expect(results["data"][0]["type"]).to eq("item")
+  end
+  it 'can return the customer of an invoice' do
+    get "/api/v1/invoices/#{@invoice_1.id}/customer"
+
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
+
+    expect(results["data"]["attributes"]["id"]).to eq(@customer_1.id)
+    expect(results["data"]["attributes"]["first_name"]).to eq(@customer_1.first_name)
+    expect(results["data"]["attributes"]["last_name"]).to eq(@customer_1.last_name)
+
+    get "/api/v1/invoices/#{@invoice_5.id}/customer"
+
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
+
+    expect(results["data"]["attributes"]["id"]).to eq(@customer_2.id)
+    expect(results["data"]["attributes"]["first_name"]).to eq(@customer_2.first_name)
+    expect(results["data"]["attributes"]["last_name"]).to eq(@customer_2.last_name)
+  end
+  it 'can return the merchant of an invoice' do
+    get "/api/v1/invoices/#{@invoice_1.id}/merchant"
+
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
+
+    expect(results["data"]["attributes"]["id"]).to eq(@merchant_1.id)
+    expect(results["data"]["attributes"]["name"]).to eq(@merchant_1.name)
+
+    get "/api/v1/invoices/#{@invoice_5.id}/merchant"
+
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
+
+    expect(results["data"]["attributes"]["id"]).to eq(@merchant_3.id)
+    expect(results["data"]["attributes"]["name"]).to eq(@merchant_3.name)
+  end
 end

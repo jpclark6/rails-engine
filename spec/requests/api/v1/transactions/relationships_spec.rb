@@ -38,7 +38,23 @@ describe 'as a transaction' do
     @transaction_4 = create(:transaction, invoice: @invoice_4, result: :success, updated_at: '2012-03-24 14:54:09 UTC')
     @transaction_5 = create(:transaction, invoice: @invoice_5, result: :failed, updated_at: '2012-03-24 14:54:09 UTC')
   end
+  it 'can return the invoice of a transaction' do
+    get "/api/v1/transactions/#{@transaction_1.id}/invoice"
 
-  # GET /api/v1/transactions/:id/invoice returns the associated invoice
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
 
+    expect(results["data"]["attributes"]["id"]).to eq(@invoice_1.id)
+    expect(results["data"]["attributes"]["customer_id"]).to eq(@invoice_1.customer_id)
+    expect(results["data"]["attributes"]["merchant_id"]).to eq(@invoice_1.merchant_id)
+
+    get "/api/v1/transactions/#{@transaction_4.id}/invoice"
+
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
+
+    expect(results["data"]["attributes"]["id"]).to eq(@invoice_4.id)
+    expect(results["data"]["attributes"]["customer_id"]).to eq(@invoice_4.customer_id)
+    expect(results["data"]["attributes"]["merchant_id"]).to eq(@invoice_4.merchant_id)
+  end
 end

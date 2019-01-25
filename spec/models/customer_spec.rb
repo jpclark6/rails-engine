@@ -53,4 +53,9 @@ RSpec.describe Customer, type: :model do
       expect(customer).to eq([Customer.first, Customer.second])
     end
   end
+  describe 'instance methods' do
+    it '.all_transactions' do
+      ### insert here
+    end
+  end
 end

@@ -32,5 +32,9 @@ class Customer < ApplicationRecord
     end
     customer
   end
+
+  def all_transactions
+    Transaction.joins(:invoice).where('invoices.customer_id = ?', id)
+  end
 end
 

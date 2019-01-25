@@ -38,8 +38,53 @@ describe 'as a customer' do
     @transaction_4 = create(:transaction, invoice: @invoice_4, result: :success, updated_at: '2012-03-24 14:54:09 UTC')
     @transaction_5 = create(:transaction, invoice: @invoice_5, result: :failed, updated_at: '2012-03-24 14:54:09 UTC')
   end
+  it 'returns a collection of invoices associated with a customer' do
+    get "/api/v1/customers/#{@customer_1.id}/invoices"
 
-#   GET /api/v1/customers/:id/invoices returns a collection of associated invoices
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
+
+    expect(results["data"].count).to eq(2)
+    expect(results["data"][0]["attributes"]["id"]).to eq(@invoice_1.id)
+    expect(results["data"][0]["attributes"]["merchant_id"]).to eq(@invoice_1.merchant.id)
+    expect(results["data"][1]["attributes"]["id"]).to eq(@invoice_4.id)
+    expect(results["data"][1]["attributes"]["merchant_id"]).to eq(@invoice_4.merchant.id)
+
+    get "/api/v1/customers/#{@customer_2.id}/invoices"
+
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
+
+    expect(results["data"].count).to eq(2)
+    expect(results["data"][0]["attributes"]["id"]).to eq(@invoice_2.id)
+    expect(results["data"][0]["attributes"]["merchant_id"]).to eq(@invoice_2.merchant.id)
+    expect(results["data"][1]["attributes"]["id"]).to eq(@invoice_5.id)
+    expect(results["data"][1]["attributes"]["merchant_id"]).to eq(@invoice_5.merchant.id)
+  end
+  it 'returns a collection of transactions associated with a customer' do
+    get "/api/v1/customers/#{@customer_1.id}/transactions"
+
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
+
+    expect(results["data"].count).to eq(2)
+    expect(results["data"][0]["attributes"]["id"]).to eq(@transaction_1.id)
+    expect(results["data"][0]["attributes"]["credit_card_number"]).to eq(@transaction_1.credit_card_number)
+    expect(results["data"][1]["attributes"]["id"]).to eq(@transaction_4.id)
+    expect(results["data"][1]["attributes"]["credit_card_number"]).to eq(@transaction_4.credit_card_number)
+
+    get "/api/v1/customers/#{@customer_2.id}/transactions"
+
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
+
+    expect(results["data"].count).to eq(2)
+    expect(results["data"][0]["attributes"]["id"]).to eq(@transaction_2.id)
+    expect(results["data"][0]["attributes"]["credit_card_number"]).to eq(@transaction_2.credit_card_number)
+    expect(results["data"][1]["attributes"]["id"]).to eq(@transaction_5.id)
+    expect(results["data"][1]["attributes"]["credit_card_number"]).to eq(@transaction_5.credit_card_number)
+  end
+
 #   GET /api/v1/customers/:id/transactions returns a collection of associated transactions
 
 end
