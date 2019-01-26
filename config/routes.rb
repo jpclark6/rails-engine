@@ -39,10 +39,10 @@ Rails.application.routes.draw do
       end
       namespace :items do
         get '/', to: 'items#index'
-        get '/:id', to: 'items#show'
         get '/most_revenue', to: 'most_revenue#index'
         get '/most_items', to: 'most_items#index'
-        get 'best_day', to: 'best_day#show'
+        get '/:id/best_day', to: 'best_day#show'
+        get '/:id', to: 'items#show'
       end
       namespace :transactions do
         get '/', to: 'transactions#index'
