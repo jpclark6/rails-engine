@@ -31,4 +31,24 @@ class InvoiceItem < ApplicationRecord
     end
     invoice_item
   end
+
+  def self.find_invoice_items_by(params)
+    if params.keys.index("id")
+      invoice_items = [InvoiceItem.find_by_id(params["id"])]
+    elsif params.keys.index("item_id")
+      invoice_items = InvoiceItem.where("item_id = ?", params["item_id"])
+    elsif params.keys.index("invoice_id")
+      invoice_items = InvoiceItem.where("invoice_id = ?", params["invoice_id"])
+    elsif params.keys.index("quantity")
+      invoice_items = InvoiceItem.where("quantity = ?", params["quantity"])
+    elsif params.keys.index("unit_price")
+      unit_price = (params["unit_price"].to_f * 100).to_i
+      invoice_items = InvoiceItem.where("unit_price = ?", unit_price)
+    elsif params.keys.index("updated_at")
+      invoice_items = InvoiceItem.where(updated_at: params["updated_at"])
+    elsif params.keys.index("created_at")
+      invoice_items = InvoiceItem.where(created_at: params["created_at"])
+    end
+    invoice_items
+  end
 end

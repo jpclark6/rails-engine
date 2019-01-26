@@ -193,141 +193,189 @@ describe "Invoice items API" do
     end
   end
 
-  describe 'can find all customers by customer parameters' do
+  describe 'can find all invoice items by parameters' do
     before(:each) do
-      @cust_1 = create(:customer, first_name: 'One', last_name: 'Two', created_at: '2012-03-27 14:54:09 UTC', updated_at: '2012-03-27 14:54:09 UTC')
-      @cust_2 = create(:customer, first_name: 'One', last_name: 'Two', created_at: '2012-04-27 14:54:09 UTC', updated_at: '2012-04-27 14:54:09 UTC')
-      @cust_3 = create(:customer, first_name: 'Two', last_name: 'Three', created_at: '2012-03-27 14:54:09 UTC', updated_at: '2012-05-27 14:54:09 UTC')
-      @cust_4 = create(:customer, first_name: 'Two', last_name: 'One', created_at: '2012-06-27 14:54:09 UTC', updated_at: '2012-04-27 14:54:09 UTC')
-      @cust_5 = create(:customer, first_name: 'Three', last_name: 'One', created_at: '2012-03-27 14:54:09 UTC', updated_at: '2012-07-27 14:54:09 UTC')
+      @customer_1 = create(:customer)
+      @customer_2 = create(:customer)
+      @customer_3 = create(:customer)
+
+      @merchant_1 = create(:merchant)
+      @merchant_2 = create(:merchant)
+      @merchant_3 = create(:merchant)
+
+      @item_1 = create(:item, merchant: @merchant_1, unit_price: 250)
+      @item_2 = create(:item, merchant: @merchant_1, unit_price: 1000)
+      @item_3 = create(:item, merchant: @merchant_2, unit_price: 3000)
+      @item_4 = create(:item, merchant: @merchant_2, unit_price: 4000)
+      @item_5 = create(:item, merchant: @merchant_3, unit_price: 5000)
+      @item_6 = create(:item, merchant: @merchant_3, unit_price: 6000)
+
+      @invoice_1 = create(:invoice, merchant: @merchant_1, status: "shipped", updated_at: '2012-03-20 14:54:09 UTC', customer: @customer_1)
+      @invoice_2 = create(:invoice, merchant: @merchant_2, status: "shipped", updated_at: '2012-03-21 14:54:09 UTC', customer: @customer_2)
+      @invoice_3 = create(:invoice, merchant: @merchant_2, status: "shipped", updated_at: '2012-03-24 14:54:09 UTC', customer: @customer_3)
+      @invoice_4 = create(:invoice, merchant: @merchant_3, status: "shipped", updated_at: '2012-03-24 14:54:09 UTC', customer: @customer_1)
+      @invoice_5 = create(:invoice, merchant: @merchant_3, status: "shipped", updated_at: '2012-03-24 14:54:09 UTC', customer: @customer_2)
+
+      @invoice_items_1 = create(:invoice_item, item: @item_1, invoice: @invoice_1, quantity: 11, unit_price: 100)
+      @invoice_items_2 = create(:invoice_item, item: @item_2, invoice: @invoice_1, quantity: 10, unit_price: 200)
+      @invoice_items_3 = create(:invoice_item, item: @item_1, invoice: @invoice_2, quantity: 11, unit_price: 100)
+      @invoice_items_4 = create(:invoice_item, item: @item_2, invoice: @invoice_2, quantity: 11, unit_price: 200)
+      @invoice_items_5 = create(:invoice_item, item: @item_3, invoice: @invoice_3, quantity: 10, unit_price: 300)
+      @invoice_items_7 = create(:invoice_item, item: @item_4, invoice: @invoice_3, quantity: 11, unit_price: 400)
+      @invoice_items_8 = create(:invoice_item, item: @item_5, invoice: @invoice_4, quantity: 100, unit_price: 500)
+      @invoice_items_8 = create(:invoice_item, item: @item_5, invoice: @invoice_5, quantity: 100, unit_price: 600)
+
+      @transaction_1 = create(:transaction, invoice: @invoice_1, result: :success, updated_at: '2012-03-20 14:54:09 UTC')
+      @transaction_2 = create(:transaction, invoice: @invoice_2, result: :success, updated_at: '2012-03-21 14:54:09 UTC')
+      @transaction_3 = create(:transaction, invoice: @invoice_3, result: :success, updated_at: '2012-03-24 14:54:09 UTC')
+      @transaction_4 = create(:transaction, invoice: @invoice_4, result: :success, updated_at: '2012-03-24 14:54:09 UTC')
+      @transaction_5 = create(:transaction, invoice: @invoice_5, result: :failed, updated_at: '2012-03-24 14:54:09 UTC')
     end
 
     it 'can find all by id' do
-      get "/api/v1/customers/find_all?id=#{@cust_2.id}"
+      get "/api/v1/invoice_items/find_all?id=#{@invoice_items_2.id}"
 
       expect(response).to be_successful
 
-      customer_data = JSON.parse(response.body)
+      ii_data = JSON.parse(response.body)
 
-      expect(customer_data.length).to eq(1)
-      expect(customer_data["data"].length).to eq(1)
+      expect(ii_data.length).to eq(1)
+      expect(ii_data["data"].length).to eq(1)
 
-      expect(customer_data["data"][0]["id"]).to eq(@cust_2.id.to_s)
-      expect(customer_data["data"][0]["type"]).to eq("customer")
-      expect(customer_data["data"][0]["attributes"]["first_name"]).to eq(@cust_2.first_name)
-      expect(customer_data["data"][0]["attributes"]["last_name"]).to eq(@cust_2.last_name)
-      expect(customer_data["data"][0]["attributes"]["id"]).to eq(@cust_2.id)
+      expect(ii_data["data"][0]["id"]).to eq(@invoice_items_2.id.to_s)
+      expect(ii_data["data"][0]["type"]).to eq("invoice_item")
+      expect(ii_data["data"][0]["attributes"]["id"]).to eq(@invoice_items_2.id)
+      expect(ii_data["data"][0]["attributes"]["item_id"]).to eq(@invoice_items_2.item_id)
+      expect(ii_data["data"][0]["attributes"]["invoice_id"]).to eq(@invoice_items_2.invoice_id)
+      expect(ii_data["data"][0]["attributes"]["quantity"]).to eq(@invoice_items_2.quantity)
+      unit_price = sprintf('%.2f', (@invoice_items_2.unit_price/100.0))
+      expect(ii_data["data"][0]["attributes"]["unit_price"]).to eq(unit_price)
     end
 
-    it 'can find all by first name' do
-      get "/api/v1/customers/find_all?first_name=#{@cust_2.first_name}"
+    it 'can find all by item id' do
+      get "/api/v1/invoice_items/find_all?item_id=#{@invoice_items_2.item_id}"
 
       expect(response).to be_successful
 
-      customer_data = JSON.parse(response.body)
+      ii_data = JSON.parse(response.body)
 
-      expect(customer_data.length).to eq(1)
-      expect(customer_data["data"].length).to eq(2)
+      expect(ii_data.length).to eq(1)
+      expect(ii_data["data"].length).to eq(2)
 
-      expect(customer_data["data"][0]["id"]).to eq(@cust_1.id.to_s)
-      expect(customer_data["data"][0]["type"]).to eq("customer")
-      expect(customer_data["data"][0]["attributes"]["first_name"]).to eq(@cust_1.first_name)
-      expect(customer_data["data"][0]["attributes"]["last_name"]).to eq(@cust_1.last_name)
-      expect(customer_data["data"][0]["attributes"]["id"]).to eq(@cust_1.id)
+      expect(ii_data["data"][0]["id"]).to eq(@invoice_items_2.id.to_s)
+      expect(ii_data["data"][0]["type"]).to eq("invoice_item")
+      expect(ii_data["data"][0]["attributes"]["id"]).to eq(@invoice_items_2.id)
+      expect(ii_data["data"][0]["attributes"]["item_id"]).to eq(@invoice_items_2.item.id)
+      expect(ii_data["data"][0]["attributes"]["quantity"]).to eq(@invoice_items_2.quantity)
+      unit_price = sprintf('%.2f', (@invoice_items_2.unit_price/100.0))
+      expect(ii_data["data"][0]["attributes"]["unit_price"]).to eq(unit_price)
 
-      expect(customer_data["data"][1]["id"]).to eq(@cust_2.id.to_s)
-      expect(customer_data["data"][1]["type"]).to eq("customer")
-      expect(customer_data["data"][1]["attributes"]["first_name"]).to eq(@cust_2.first_name)
-      expect(customer_data["data"][1]["attributes"]["last_name"]).to eq(@cust_2.last_name)
-      expect(customer_data["data"][1]["attributes"]["id"]).to eq(@cust_2.id)
+      expect(ii_data["data"][1]["id"]).to eq(@invoice_items_4.id.to_s)
+      expect(ii_data["data"][1]["type"]).to eq("invoice_item")
+      expect(ii_data["data"][1]["attributes"]["id"]).to eq(@invoice_items_4.id)
+      expect(ii_data["data"][1]["attributes"]["item_id"]).to eq(@invoice_items_4.item.id)
+      expect(ii_data["data"][1]["attributes"]["quantity"]).to eq(@invoice_items_4.quantity)
+      unit_price = sprintf('%.2f', (@invoice_items_4.unit_price/100.0))
+      expect(ii_data["data"][1]["attributes"]["unit_price"]).to eq(unit_price)
     end
 
-    it 'can find all by last name' do
-      get "/api/v1/customers/find_all?last_name=#{@cust_4.last_name}"
+    it 'can find all by invoice id' do
+      get "/api/v1/invoice_items/find_all?invoice_id=#{@invoice_items_2.invoice_id}"
 
       expect(response).to be_successful
 
-      customer_data = JSON.parse(response.body)
+      ii_data = JSON.parse(response.body)
 
-      expect(customer_data.length).to eq(1)
-      expect(customer_data["data"].length).to eq(2)
+      expect(ii_data.length).to eq(1)
+      expect(ii_data["data"].length).to eq(2)
 
-      expect(customer_data["data"][0]["id"]).to eq(@cust_4.id.to_s)
-      expect(customer_data["data"][0]["type"]).to eq("customer")
-      expect(customer_data["data"][0]["attributes"]["first_name"]).to eq(@cust_4.first_name)
-      expect(customer_data["data"][0]["attributes"]["last_name"]).to eq(@cust_4.last_name)
-      expect(customer_data["data"][0]["attributes"]["id"]).to eq(@cust_4.id)
+      expect(ii_data["data"][0]["id"]).to eq(@invoice_items_1.id.to_s)
+      expect(ii_data["data"][0]["type"]).to eq("invoice_item")
+      expect(ii_data["data"][0]["attributes"]["id"]).to eq(@invoice_items_1.id)
+      expect(ii_data["data"][0]["attributes"]["item_id"]).to eq(@invoice_items_1.item.id)
+      expect(ii_data["data"][0]["attributes"]["quantity"]).to eq(@invoice_items_1.quantity)
+      unit_price = sprintf('%.2f', (@invoice_items_1.unit_price/100.0))
+      expect(ii_data["data"][0]["attributes"]["unit_price"]).to eq(unit_price)
 
-      expect(customer_data["data"][1]["id"]).to eq(@cust_5.id.to_s)
-      expect(customer_data["data"][1]["type"]).to eq("customer")
-      expect(customer_data["data"][1]["attributes"]["first_name"]).to eq(@cust_5.first_name)
-      expect(customer_data["data"][1]["attributes"]["last_name"]).to eq(@cust_5.last_name)
-      expect(customer_data["data"][1]["attributes"]["id"]).to eq(@cust_5.id)
+      expect(ii_data["data"][1]["id"]).to eq(@invoice_items_2.id.to_s)
+      expect(ii_data["data"][1]["type"]).to eq("invoice_item")
+      expect(ii_data["data"][1]["attributes"]["id"]).to eq(@invoice_items_2.id)
+      expect(ii_data["data"][1]["attributes"]["item_id"]).to eq(@invoice_items_2.item.id)
+      expect(ii_data["data"][1]["attributes"]["quantity"]).to eq(@invoice_items_2.quantity)
+      unit_price = sprintf('%.2f', (@invoice_items_2.unit_price/100.0))
+      expect(ii_data["data"][1]["attributes"]["unit_price"]).to eq(unit_price)
     end
 
-    it 'can find all by created at date' do
-      get "/api/v1/customers/find_all?created_at=#{@cust_1.created_at}"
+    it 'can find all by quantity' do
+      get "/api/v1/invoice_items/find_all?quantity=#{@invoice_items_2.quantity}"
 
       expect(response).to be_successful
 
-      customer_data = JSON.parse(response.body)
+      ii_data = JSON.parse(response.body)
 
-      expect(customer_data.length).to eq(1)
-      expect(customer_data["data"].length).to eq(3)
+      expect(ii_data.length).to eq(1)
+      expect(ii_data["data"].length).to eq(2)
 
-      expect(customer_data["data"][0]["id"]).to eq(@cust_1.id.to_s)
-      expect(customer_data["data"][0]["type"]).to eq("customer")
-      expect(customer_data["data"][0]["attributes"]["first_name"]).to eq(@cust_1.first_name)
-      expect(customer_data["data"][0]["attributes"]["last_name"]).to eq(@cust_1.last_name)
-      expect(customer_data["data"][0]["attributes"]["id"]).to eq(@cust_1.id)
+      expect(ii_data["data"][0]["id"]).to eq(@invoice_items_2.id.to_s)
+      expect(ii_data["data"][0]["type"]).to eq("invoice_item")
+      expect(ii_data["data"][0]["attributes"]["id"]).to eq(@invoice_items_2.id)
+      expect(ii_data["data"][0]["attributes"]["item_id"]).to eq(@invoice_items_2.item.id)
+      expect(ii_data["data"][0]["attributes"]["quantity"]).to eq(@invoice_items_2.quantity)
+      unit_price = sprintf('%.2f', (@invoice_items_2.unit_price/100.0))
+      expect(ii_data["data"][0]["attributes"]["unit_price"]).to eq(unit_price)
 
-      expect(customer_data["data"][1]["id"]).to eq(@cust_3.id.to_s)
-      expect(customer_data["data"][1]["type"]).to eq("customer")
-      expect(customer_data["data"][1]["attributes"]["first_name"]).to eq(@cust_3.first_name)
-      expect(customer_data["data"][1]["attributes"]["last_name"]).to eq(@cust_3.last_name)
-      expect(customer_data["data"][1]["attributes"]["id"]).to eq(@cust_3.id)
-
-      expect(customer_data["data"][2]["id"]).to eq(@cust_5.id.to_s)
+      expect(ii_data["data"][1]["id"]).to eq(@invoice_items_5.id.to_s)
+      expect(ii_data["data"][1]["type"]).to eq("invoice_item")
+      expect(ii_data["data"][1]["attributes"]["id"]).to eq(@invoice_items_5.id)
+      expect(ii_data["data"][1]["attributes"]["item_id"]).to eq(@invoice_items_5.item.id)
+      expect(ii_data["data"][1]["attributes"]["quantity"]).to eq(@invoice_items_5.quantity)
+      unit_price = sprintf('%.2f', (@invoice_items_5.unit_price/100.0))
+      expect(ii_data["data"][1]["attributes"]["unit_price"]).to eq(unit_price)
     end
 
-    it 'can find all by updated at date' do
-      get "/api/v1/customers/find_all?updated_at=#{@cust_2.updated_at}"
+    it 'can find all by unit price' do
+      unit_price = sprintf('%.2f', (@invoice_items_2.unit_price/100.0))
+      get "/api/v1/invoice_items/find_all?unit_price=#{unit_price}"
 
       expect(response).to be_successful
 
-      customer_data = JSON.parse(response.body)
+      ii_data = JSON.parse(response.body)
 
-      expect(customer_data.length).to eq(1)
-      expect(customer_data["data"].length).to eq(2)
+      expect(ii_data.length).to eq(1)
+      expect(ii_data["data"].length).to eq(2)
 
-      expect(customer_data["data"][0]["id"]).to eq(@cust_2.id.to_s)
-      expect(customer_data["data"][0]["type"]).to eq("customer")
-      expect(customer_data["data"][0]["attributes"]["first_name"]).to eq(@cust_2.first_name)
-      expect(customer_data["data"][0]["attributes"]["last_name"]).to eq(@cust_2.last_name)
-      expect(customer_data["data"][0]["attributes"]["id"]).to eq(@cust_2.id)
+      expect(ii_data["data"][0]["id"]).to eq(@invoice_items_2.id.to_s)
+      expect(ii_data["data"][0]["type"]).to eq("invoice_item")
+      expect(ii_data["data"][0]["attributes"]["id"]).to eq(@invoice_items_2.id)
+      expect(ii_data["data"][0]["attributes"]["item_id"]).to eq(@invoice_items_2.item.id)
+      expect(ii_data["data"][0]["attributes"]["quantity"]).to eq(@invoice_items_2.quantity)
+      unit_price = sprintf('%.2f', (@invoice_items_2.unit_price/100.0))
+      expect(ii_data["data"][0]["attributes"]["unit_price"]).to eq(unit_price)
 
-      expect(customer_data["data"][1]["id"]).to eq(@cust_4.id.to_s)
-      expect(customer_data["data"][1]["type"]).to eq("customer")
-      expect(customer_data["data"][1]["attributes"]["first_name"]).to eq(@cust_4.first_name)
-      expect(customer_data["data"][1]["attributes"]["last_name"]).to eq(@cust_4.last_name)
-      expect(customer_data["data"][1]["attributes"]["id"]).to eq(@cust_4.id)
+      expect(ii_data["data"][1]["id"]).to eq(@invoice_items_4.id.to_s)
+      expect(ii_data["data"][1]["type"]).to eq("invoice_item")
+      expect(ii_data["data"][1]["attributes"]["id"]).to eq(@invoice_items_4.id)
+      expect(ii_data["data"][1]["attributes"]["item_id"]).to eq(@invoice_items_4.item.id)
+      expect(ii_data["data"][1]["attributes"]["quantity"]).to eq(@invoice_items_4.quantity)
+      unit_price = sprintf('%.2f', (@invoice_items_4.unit_price/100.0))
+      expect(ii_data["data"][1]["attributes"]["unit_price"]).to eq(unit_price)
     end
 
   end
 
-  it 'can return a random customer' do
-    create_list(:customer, 5)
+  it 'can return a random invoice_item' do
+    create_list(:invoice_item, 5)
 
-    get "/api/v1/customers/random.json"
+    get "/api/v1/invoice_items/random.json"
 
     expect(response).to be_successful
 
-    customers_data = JSON.parse(response.body)
+    ii_data = JSON.parse(response.body)
 
-    expect(customers_data.length).to eq(1)
-    expect(customers_data["data"].length).to eq(3)
-    expect(customers_data["data"].keys). to eq(["id", "type", "attributes"])
-    expect(customers_data["data"]["type"]). to eq("customer")
-    expect(customers_data["data"]["attributes"].keys). to eq(["id", "first_name", "last_name"])
+    expect(ii_data.length).to eq(1)
+    expect(ii_data["data"].length).to eq(3)
+    expect(ii_data["data"].keys). to eq(["id", "type", "attributes"])
+    expect(ii_data["data"]["type"]). to eq("invoice_item")
+    expect(ii_data["data"]["attributes"].keys). to eq(["id", "item_id", "invoice_id", "quantity", "unit_price"])
   end
 end

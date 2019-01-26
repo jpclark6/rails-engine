@@ -33,11 +33,16 @@ Rails.application.routes.draw do
       namespace :invoice_items do
         get '/', to: 'invoice_items#index'
         get '/find', to: 'find_invoice_items#show'
+        get '/find_all', to: 'find_invoice_items#index'
+        get '/random', to: 'random#show'
         get '/:id', to: 'invoice_items#show'
       end
       namespace :items do
         get '/', to: 'items#index'
         get '/:id', to: 'items#show'
+        get '/most_revenue', to: 'most_revenue#index'
+        get '/most_items', to: 'most_items#index'
+        get 'best_day', to: 'best_day#show'
       end
       namespace :transactions do
         get '/', to: 'transactions#index'
