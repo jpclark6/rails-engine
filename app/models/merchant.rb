@@ -49,4 +49,29 @@ class Merchant < ApplicationRecord
     Customer.find(customer.customer_id)
   end
 
+  def self.find_merchant_by(params)
+    if params.keys.index("id")
+      merchant = Merchant.find_by_id(params["id"])
+    elsif params.keys.index("name")
+      merchant = Merchant.where("name = ?", params["name"]).first
+    elsif params.keys.index("updated_at")
+      merchant = Merchant.where(updated_at: params["updated_at"]).first
+    elsif params.keys.index("created_at")
+      merchant = Merchant.where(created_at: params["created_at"]).first
+    end
+    merchant
+  end
+
+  def self.find_merchants_by(params)
+    if params.keys.index("id")
+      merchants = [Merchant.find_by_id(params["id"])]
+    elsif params.keys.index("name")
+      merchants = Merchant.where("name = ?", params["name"])
+    elsif params.keys.index("updated_at")
+      merchants = Merchant.where(updated_at: params["updated_at"])
+    elsif params.keys.index("created_at")
+      merchants = Merchant.where(created_at: params["created_at"])
+    end
+    merchants
+  end
 end

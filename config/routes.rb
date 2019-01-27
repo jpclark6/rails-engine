@@ -16,6 +16,8 @@ Rails.application.routes.draw do
         get '/most_revenue', to: 'merchants_revenue#index'
         get '/most_items', to: 'merchants_items#index'
         get '/revenue', to: 'merchants_revenue_by_date#show'
+        get '/find', to: 'find_merchants#show'
+        get '/find_all', to: 'find_merchants#index'
         get '/:id', to: 'merchants#show'
         get '/:id/revenue', to: 'merchants_revenue#show'
         get '/:id/favorite_customer', to: 'merchant_favorite_customer#show'
@@ -24,12 +26,14 @@ Rails.application.routes.draw do
       end
       namespace :invoices do
         get '/', to: 'invoices#index'
-        get '/:id', to: 'invoices#show'
+        get '/find', to: 'find_invoices#show'
+        get '/find_all', to: 'find_invoices#index'
         get '/:id/transactions', to: 'transactions#index'
         get '/:id/invoice_items', to: 'invoice_items#index'
         get '/:id/items', to: 'items#index'
         get '/:id/customer', to: 'customer#show'
         get '/:id/merchant', to: 'merchant#show'
+        get '/:id', to: 'invoices#show'
       end
       namespace :invoice_items do
         get '/', to: 'invoice_items#index'
@@ -44,6 +48,8 @@ Rails.application.routes.draw do
         get '/', to: 'items#index'
         get '/most_revenue', to: 'most_revenue#index'
         get '/most_items', to: 'most_items#index'
+        get '/find', to: 'find_items#show'
+        get '/find_all', to: 'find_items#index'
         get '/:id/invoice_items', to: 'invoice_items#index'
         get '/:id/merchant', to: 'merchants#show'
         get '/:id/best_day', to: 'best_day#show'
@@ -51,6 +57,8 @@ Rails.application.routes.draw do
       end
       namespace :transactions do
         get '/', to: 'transactions#index'
+        get '/find', to: 'find_transactions#show'
+        get '/find_all', to: 'find_transactions#index'
         get '/:id', to: 'transactions#show'
         get '/:id/invoice', to: 'invoice#show'
       end
