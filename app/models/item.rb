@@ -25,7 +25,7 @@ class Item < ApplicationRecord
                   .joins(:transactions)
                   .where(transactions: {result: 0})
                   .where('invoice_items.item_id = ?', id)
-                  .group('invoices.created_at')
+                  .group('invoices.id')
                   .order('created_at desc')
                   .order('revenue desc')
                   .first
