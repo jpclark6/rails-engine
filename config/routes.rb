@@ -8,6 +8,7 @@ Rails.application.routes.draw do
         get '/random', to: 'random#show'
         get '/:id', to: 'customers#show'
         get '/:id/invoices', to: 'customer_invoices#index'
+        get '/:id/favorite_merchant', to: 'favorite_merchant#show'
         get '/:id/transactions', to: 'customer_transactions#index'
       end
       namespace :merchants do
@@ -32,6 +33,8 @@ Rails.application.routes.draw do
       end
       namespace :invoice_items do
         get '/', to: 'invoice_items#index'
+        get '/:id/item', to: 'items#show'
+        get '/:id/invoice', to: 'invoices#show'
         get '/find', to: 'find_invoice_items#show'
         get '/find_all', to: 'find_invoice_items#index'
         get '/random', to: 'random#show'
@@ -41,6 +44,8 @@ Rails.application.routes.draw do
         get '/', to: 'items#index'
         get '/most_revenue', to: 'most_revenue#index'
         get '/most_items', to: 'most_items#index'
+        get '/:id/invoice_items', to: 'invoice_items#index'
+        get '/:id/merchant', to: 'merchants#show'
         get '/:id/best_day', to: 'best_day#show'
         get '/:id', to: 'items#show'
       end

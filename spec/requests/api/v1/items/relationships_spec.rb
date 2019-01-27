@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'as a customer' do
+describe 'as an item' do
   before(:each) do
     @customer_1 = create(:customer)
     @customer_2 = create(:customer)
@@ -38,8 +38,26 @@ describe 'as a customer' do
     @transaction_4 = create(:transaction, invoice: @invoice_4, result: :success, updated_at: '2012-03-24 14:54:09 UTC')
     @transaction_5 = create(:transaction, invoice: @invoice_5, result: :failed, updated_at: '2012-03-24 14:54:09 UTC')
   end
+  it 'can return the invoice items of an item' do
+    get "/api/v1/items/#{@item_2.id}/invoice_items"
 
-  # GET /api/v1/items/:id/invoice_items returns a collection of associated invoice items
-  # GET /api/v1/items/:id/merchant returns the associated merchant
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
 
+    expect(results["data"].length).to eq(2)
+
+    expect(results["data"][0]["attributes"]["id"]).to eq(@invoice_items_2.id)
+    expect(results["data"][0]["attributes"]["item_id"]).to eq(@invoice_items_2.item_id)
+    expect(results["data"][0]["type"]).to eq("invoice_item")
+  end
+  it 'can return the merchant of an item' do
+    get "/api/v1/items/#{@item_2.id}/merchant"
+
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
+
+    expect(results["data"]["attributes"]["id"]).to eq(@merchant_1.id)
+    expect(results["data"]["attributes"]["name"]).to eq(@merchant_1.name)
+    expect(results["data"]["type"]).to eq("merchant")
+  end
 end

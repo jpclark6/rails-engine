@@ -84,7 +84,4 @@ describe 'as a customer' do
     expect(results["data"][1]["attributes"]["id"]).to eq(@transaction_5.id)
     expect(results["data"][1]["attributes"]["credit_card_number"]).to eq(@transaction_5.credit_card_number)
   end
-
-#   GET /api/v1/customers/:id/transactions returns a collection of associated transactions
-
 end

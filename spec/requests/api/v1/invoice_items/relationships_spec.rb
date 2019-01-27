@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'as a customer' do
+describe 'invoice items' do
   before(:each) do
     @customer_1 = create(:customer)
     @customer_2 = create(:customer)
@@ -38,8 +38,26 @@ describe 'as a customer' do
     @transaction_4 = create(:transaction, invoice: @invoice_4, result: :success, updated_at: '2012-03-24 14:54:09 UTC')
     @transaction_5 = create(:transaction, invoice: @invoice_5, result: :failed, updated_at: '2012-03-24 14:54:09 UTC')
   end
+  it 'can return the invoice of an invoice item' do
+    get "/api/v1/invoice_items/#{@invoice_items_2.id}/invoice"
 
-  # GET /api/v1/invoice_items/:id/invoice returns the associated invoice
-  # GET /api/v1/invoice_items/:id/item returns the associated item
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
 
+    expect(results["data"]["attributes"]["id"]).to eq(@invoice_1.id)
+    expect(results["data"]["attributes"]["customer_id"]).to eq(@invoice_1.customer_id)
+    expect(results["data"]["attributes"]["merchant_id"]).to eq(@invoice_1.merchant_id)
+    expect(results["data"]["type"]).to eq("invoice")
+  end
+  it 'can return the invoice of an invoice item' do
+    get "/api/v1/invoice_items/#{@invoice_items_2.id}/item"
+
+    expect(response).to be_successful
+    results = JSON.parse(response.body)
+
+    expect(results["data"]["attributes"]["id"]).to eq(@item_2.id)
+    expect(results["data"]["attributes"]["name"]).to eq(@item_2.name)
+    expect(results["data"]["attributes"]["description"]).to eq(@item_2.description)
+    expect(results["data"]["type"]).to eq("item")
+  end
 end

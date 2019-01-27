@@ -36,5 +36,9 @@ class Customer < ApplicationRecord
   def all_transactions
     Transaction.joins(:invoice).where('invoices.customer_id = ?', id)
   end
+
+  def favorite_merchant
+    Merchant.select('merchants.*, count(transactions.id) as trans_count').joins(:invoices).joins(invoices: :transactions).where('invoices.customer_id = ?', id).where(transactions: {result: 0}).group(:id).order('trans_count desc').first
+  end
 end
 
