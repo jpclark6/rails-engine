@@ -88,9 +88,6 @@ describe 'item API' do
     expect(response).to be_successful
     items_data = JSON.parse(response.body)
 
-    # '2012-03-20 14:54:09 UTC'
-    # '2012-03-20T14:54:09.000Z'
-
     expect(items_data["data"]["attributes"]["best_day"]).to eq('2012-03-20T14:54:09.000Z')
   end
 end

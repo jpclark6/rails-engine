@@ -74,4 +74,11 @@ class Merchant < ApplicationRecord
     end
     merchants
   end
+
+  def customers_with_pending_invoices
+    merchant_customers = Customer.joins(invoices: :transactions).select('customers.*').where("transactions.result = 1").where('invoices.merchant_id = ?', id).distinct
+    merchant_customers.select do |customer|
+      Transaction.joins(:invoice).where('invoices.merchant_id = ?', id).where("transactions.result = 0").where('invoices.customer_id = ?', customer.id).empty?
+    end
+  end
 end

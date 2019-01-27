@@ -20,10 +20,20 @@ class Item < ApplicationRecord
   end
 
   def best_day
-    time = Invoice.select('invoices.*, (invoice_items.unit_price * invoice_items.quantity) as revenue').joins(:invoice_items).joins(:transactions).where(transactions: {result: 0}).where('invoice_items.item_id = ?', id).order('revenue desc').first.updated_at
+    time = Invoice.select('invoices.*, (sum(invoice_items.unit_price * invoice_items.quantity)) as revenue')
+                  .joins(:invoice_items)
+                  .joins(:transactions)
+                  .where(transactions: {result: 0})
+                  .where('invoice_items.item_id = ?', id)
+                  .group('invoices.created_at')
+                  .order('created_at desc')
+                  .order('revenue desc')
+                  .first
+                  .updated_at
+
     time.strftime("%Y-%m-%dT%H:%M:%S.000Z")
   end
-
+                
   def self.find_item_by(params)
     if params.keys.index("id")
       item = Item.find_by_id(params["id"])
