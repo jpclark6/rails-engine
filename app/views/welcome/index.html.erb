@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Rails Engine</title>
+    <meta charset='utf-8' />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vuex"></script>
+  </head>
+
+  <body>
+    <div id='content'>
+      <nav>
+        <h1 id='title'>Rails Engine API Info</h1>
+        <a href="https://github.com/jpclark6/rails-engine">Repo found here</a>
+      </nav>
+      <h3>What is it:</h3>
+      <p>This is a JSON API built in rails by Justin Clark that exposes a SalesEngine database scheme, 
+      along with some statistics and relationships. All tables can be called, along with 
+      find by parameters, and find all by parameters, along with business intelligence for 
+      the top merchants by revenue, most items sold by revenue, total revenue on a given date, 
+      invidivdual merchant data for revenue, revenue on a date, and a favorite customer by 
+      revenue, along with the most revenue items, most items sold by quantity, the best day for 
+      an item based on revenue, and finally a customer's favorite merchant.
+      </p>
+      <h3>All endpoints:</h3>
+      <div id="vapp">
+        <div id='type-select'>
+          <p>Select the category to see all endpoints:
+          <select id='item-select' v-model="type">
+            <option value="none">none</option>
+            <option value="customer">Customer</option>
+            <option value="merchant">Merchant</option>
+            <option value="invoice">Invoice</option>
+            <option value="invoice-item">Invoice Item</option>
+            <option value="item">Item</option>
+            <option value="transaction">Transaction</option>
+          </select>
+          </p>
+          <ul>
+            <li v-for='item in apiE[type]'>{{ item }}</li>
+          </ul>
+          <p v-if="type !== 'none'"><b>Available attributes:</b> {{ apiA[type] }}</p>
+        </div>
+        <div id='api-calls'>
+          <h3>Example calls to the API:</h3>
+          <p>Customer with a first name of Joey: <%= link_to "/api/v1/customers/find?first_name=Joey", "/api/v1/customers/find?first_name=Joey" %></p>
+          <p>Item statistics for top 2 most sold items: <%= link_to "/api/v1/items/most_items?quantity=2", "/api/v1/items/most_items?quantity=2" %></p>
+          <p>Merchant #24's total revenue: <%= link_to "/api/v1/merchants/24/revenue", "/api/v1/merchants/24/revenue" %></p>
+          <p>Top 3 merchants by revenue: <%= link_to "/api/v1/merchants/most_revenue?quantity=3", "/api/v1/merchants/most_revenue?quantity=3" %></p>
+          <p>Invoices with a shipped status: <%= link_to "/api/v1/invoices/find_all?status=shipped", "/api/v1/invoices/find_all?status=shipped" %></p>
+          <p>All invoice items: <%= link_to "/api/v1/invoice_items", "/api/v1/invoice_items" %></p>
+          <p>Merchant #13's invoices: <%= link_to "/api/v1/merchants/13/invoices", "/api/v1/merchants/13/invoices" %></p>
+        </div>
+      </div>
+    </div>
+
+  <script>
+    const vueApp = new Vue({
+      el: '#vapp',
+      data: { 
+        type: 'none',
+        apiE: {
+          'none': ['Select option to see routes'],
+          'customer':   ['/api/v1/customers',
+                          '/api/v1/customers/find?attribute=value',
+                          '/api/v1/customers/find_all?attribute=value',
+                          '/api/v1/customers/random',
+                          '/api/v1/customers/:id',
+                          '/api/v1/customers/:id/invoices',
+                          '/api/v1/customers/:id/favorite_merchant',
+                          '/api/v1/customers/:id/transaction',
+                        ],
+          'merchant':   ['/api/v1/merchants',
+                          '/api/v1/merchants/find?attribute=value',
+                          '/api/v1/merchants/find_all?attribute=value',
+                          '/api/v1/merchants/most_revenue?quantity=3',
+                          '/api/v1/merchants/most_items',
+                          '/api/v1/merchants/revenue',
+                          '/api/v1/merchants/:id',
+                          '/api/v1/merchants/:id/revenue',
+                          '/api/v1/merchants/:id/favorite_customer',
+                          '/api/v1/merchants/:id/items',
+                          '/api/v1/merchants/:id/invoices',
+                          '/api/v1/merchants/:id/customers_pending_invoices'
+                          ],
+          'invoice':      ['/api/v1/invoices',
+                            '/api/v1/invoices/find?attribute=value',
+                            '/api/v1/invoices/find_all?attribute=value',
+                            '/api/v1/invoices/:id/transactions',
+                            '/api/v1/invoices/:id/invoice_items',
+                            '/api/v1/invoices/:id/items',
+                            '/api/v1/invoices/:id/customer',
+                            '/api/v1/invoices/:id/merchant',
+                            '/api/v1/invoices/:id'
+                          ],
+          'invoice-item': ['/api/v1/invoice_items',
+                            '/api/v1/invoice_items/find?attribute=value',
+                            '/api/v1/invoice_items/find_all?attribute=value',
+                            '/api/v1/invoice_items/:id/item',
+                            '/api/v1/invoice_items/:id/invoice',
+                            '/api/v1/invoice_items/random',
+                            '/api/v1/invoice_items/:id'
+                          ],
+          'item':         ['/api/v1/items',
+                            '/api/v1/items/find?attribute=value',
+                            '/api/v1/items/find_all?attribute=value',
+                            '/api/v1/items/most_revenue',
+                            '/api/v1/items/most_items',
+                            '/api/v1/items/:id/invoice_items',
+                            '/api/v1/items/:id/merchant',
+                            '/api/v1/items/:id/best_day',
+                            '/api/v1/items/:id'
+                          ],
+          'transaction':  ['/api/v1/transactions',
+                            '/api/v1/transactions/find?attribute=value',
+                            '/api/v1/transactions/find_all?attribute=value',
+                            '/api/v1/transactions/:id',
+                            '/api/v1/transactions/:id/invoice'
+                          ]},
+        apiA: {'none': '',
+                'customer': 'id, first_name, last_name, created_at, updated_at',
+                'invoice-item': 'id, item_id, invoice_id, quantity, unit_price, created_at, updated_at',
+                'invoice': 'id, customer_id, merchant_id, status, created_at, updated_at',
+                'item': 'id, name, description, unit_price, merchant_id, created_at, updated_at',
+                'merchant': 'id, name, created_at, updated_at',
+                'transaction': 'id, invoice_id, credit_card_number, result, created_at, updated_at'
+              }
+      },
+      methods: {
+
+      }
+    })
+    </script>
+    <style type="text/css">
+      body {
+        font-family: 'Roboto', sans-serif;
+        max-width: 700px;
+        margin: 10px auto;
+        background-color: #003666;
+        color: white;
+      }
+      nav {
+        text-align: center;
+      }
+      #content {
+        background-color: #00539c;
+        border: 1px solid #e6f3ff;
+        border-radius: 5px;
+        padding: 10px 30px;
+      }
+      a {
+        color: aliceblue;
+      }
+      #item-select {
+        padding: 4px 10px;
+      }
+    </style>
+  </body>
+</html>

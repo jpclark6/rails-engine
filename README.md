@@ -85,7 +85,7 @@ If the server started up correctly you should now be able to make API calls usin
 /api/v1/merchants
 /api/v1/merchants/find?attribute=value
 /api/v1/merchants/find_all?attribute=value
-/api/v1/merchants/most_revenue
+/api/v1/merchants/most_revenue?quantity=3
 /api/v1/merchants/most_items
 /api/v1/merchants/revenue
 /api/v1/merchants/:id
