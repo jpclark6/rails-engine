@@ -4,6 +4,12 @@ This is a JSON API I built in rails that exposes a SalesEngine database scheme, 
 
 It adheres to [this](https://jsonapi.org/) JSON spec for formatting data.
 
+## Hosting
+
+It is currently hosted at [rails-engine](www.rails-engine-1810.herokuapp.com).
+
+## Sample Return
+
 Here is a sample return when you call '/api/v1/items/most_items?quantity=3' to get the top 3 items by revenue.
 
 ```
