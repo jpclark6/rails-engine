@@ -6,7 +6,7 @@ It adheres to [this](https://jsonapi.org/) JSON spec for formatting data.
 
 ## Hosting
 
-It is currently hosted at [rails-engine](www.rails-engine-1810.herokuapp.com).
+It is currently hosted at [this address](http://rails-engine-1810.herokuapp.com/).
 
 ## Sample Return
 
